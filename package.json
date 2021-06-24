@@ -16,5 +16,9 @@
     "url": "https://github.com/raresChelariu/selfinnback/issues"
   },
   "homepage": "https://github.com/raresChelariu/selfinnback#readme",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mariadb": "^2.5.4"
+  }
 }
