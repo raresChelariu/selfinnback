@@ -2,9 +2,9 @@ const express = require('express')
 const app = express()
 const port = 3000
 
-app.get('/', (req, res) => {
-    res.send('Hello World!')
-})
+app.use('/accounts', require('./Routes/AccountRoutes'))
+app.use('/clients', require('./Routes/ClientRoutes'))
+app.use('/companies', require('./Routes/CompanyRoutes'))
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)

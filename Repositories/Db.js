@@ -4,7 +4,7 @@ class DbUtils {
     static #Connection() {
         return mariadb.createConnection({
             host: 'localhost',
-            database: 'clama',
+            database: 'selfinn',
             user: 'root',
             password: 'test123',
             port: 3306,

@@ -100,8 +100,8 @@ create or replace table booking_state
 );
 INSERT INTO booking_state (ID, stare_rezervare)
 values (1, 'trimisa'),
-    (2, 'acceptata'),
-    (3, 'respinsa');
+       (2, 'acceptata'),
+       (3, 'respinsa');
 
 create or replace table bookings
 (
@@ -115,4 +115,95 @@ create or replace table bookings
     constraint ValidHotelForBookings foreign key (hotel_ID) references hotels (ID) on delete cascade,
     constraint ValidBookingState foreign key (stare_ID) references booking_state (ID) on delete cascade
 );
+
+create or replace
+    definer = root@localhost procedure Accounts_Login(IN in_email varchar(256), IN in_password varchar(256))
+begin
+    declare v_valid_credentials int default 0;
+    declare v_acc_ID int default 0;
+    declare v_is_client_account int default 0;
+    declare v_acc_type varchar(256);
+    declare v_name_in_app varchar(256);
+
+    select count(*) into v_valid_credentials from accounts where email = in_email and parola = in_password;
+
+    if v_valid_credentials = 0 then
+        signal sqlstate '45000' set message_text = '$Invalid credentials$';
+    end if;
+
+    select ID into v_acc_ID from accounts where email = in_email and parola = in_password;
+
+    select COUNT(*) into v_is_client_account from clients where account_ID = v_acc_ID;
+
+    if v_is_client_account != 0 then
+        set v_acc_type = 'client';
+        select CONCAT(c.prenume, ' ', c.nume_familie) into v_name_in_app from clients c where c.account_ID = v_acc_ID limit 1;
+        select v_acc_ID      as ID,
+               in_email      as email,
+               v_acc_type    as account_type,
+               v_name_in_app as in_app_name;
+    else
+        set v_acc_type = 'company';
+        select denumire into v_name_in_app from company where account_ID = v_acc_ID;
+        select v_acc_ID      as ID,
+               in_email      as email,
+               v_acc_type    as account_type,
+               v_name_in_app as in_app_name;
+    end if;
+end;
+
+
+create or replace
+    definer = root@localhost procedure Company_Register(IN in_email varchar(256), IN in_password varchar(256)
+, IN in_denumire varchar(256), IN in_cui varchar(16), IN in_nr_reg_com varchar(32), IN in_sediu_social varchar(256))
+begin
+    declare v_acc_already_exists int default 0;
+    declare v_acc_ID int default 0;
+    select count(*)
+    into v_acc_already_exists
+    from accounts
+    where email = in_email;
+
+    if v_acc_already_exists != 0 then
+        signal sqlstate '45000' set message_text = '$Email already in use$';
+    end if;
+
+    insert into accounts (email, parola) VALUES (in_email, in_password);
+    select last_insert_id() into v_acc_ID;
+
+    insert into company (account_ID, denumire, cui, numar_registru_comert, sediu_social)
+    VALUES (v_acc_ID, in_denumire, in_cui, in_nr_reg_com, in_sediu_social);
+
+    select v_acc_ID    as ID,
+           in_email    as email,
+           'company'   as account_type,
+           in_denumire as in_app_name;
+end;
+
+create or replace
+    definer = root@localhost procedure Client_Register(IN in_email varchar(256), IN in_password varchar(256)
+, IN in_prenume varchar(256), IN in_nume_familie varchar(16), IN in_cnp varchar(16), IN in_serie_buletin varchar(16))
+begin
+    declare v_acc_already_exists int default 0;
+    declare v_acc_ID int default 0;
+    select count(*)
+    into v_acc_already_exists
+    from accounts
+    where email = in_email;
+
+    if v_acc_already_exists != 0 then
+        signal sqlstate '45000' set message_text = '$Email already in use$';
+    end if;
+
+    insert into accounts (email, parola) VALUES (in_email, in_password);
+    select last_insert_id() into v_acc_ID;
+
+    insert into clients (account_ID, prenume, nume_familie, CNP, serie_buletin)
+    values (v_acc_ID, in_prenume, in_nume_familie, in_cnp, in_serie_buletin);
+
+    select v_acc_ID                                 as ID,
+           in_email                                 as email,
+           'client'                                 as account_type,
+           concat(in_prenume, ' ', in_nume_familie) as in_app_name;
+end;
 
