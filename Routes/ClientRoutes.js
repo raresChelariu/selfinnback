@@ -50,7 +50,7 @@ router.post('/register',
     (req, res) => {
         ClientRepository.Register(req.body.email, req.body.parola, req.body.prenume, req.body.nume_familie, req.body.cnp, req.body.serie_buletin)
             .then(result => {
-                let user = result[0][0]
+                let user = result
                 let token = AuthMiddleware.generateToken(user)
                 res.send({
                     user: user,

@@ -44,12 +44,12 @@ const ValidationSchemas = {
 router.use(express.json())
 
 router.post('/register',
-    ValidationSchemas.Register.run,
+    ValidationSchemas.Register,
     (req, res) => {
         CompanyRepository.Register(req.body.email, req.body.parola, req.body.denumire, req.body.cui, req.body.nr_reg_com,
             req.body.sediu_social)
             .then(result => {
-                let user = result[0]
+                let user = result
                 let token = AuthMiddleware.generateToken(user)
                 res.send({
                     user: user,

@@ -23,11 +23,11 @@ const ValidationSchemas = {
 }
 
 router.post('/login',
-    ValidationSchemas.Login.run,
+    ValidationSchemas.Login,
     function (req, res) {
-    AccountRepository.Login(req.body["email"], req.body["password"])
+    AccountRepository.Login(req.body["email"], req.body["parola"])
         .then(result => {
-            let user = result[0]
+            let user = result
             let token = AuthMiddleware.generateToken(user)
             res.send({
                 user: user,

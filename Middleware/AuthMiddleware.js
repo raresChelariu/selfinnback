@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken')
 class AuthMiddleware {
     static #TOKEN_SECRET = require('crypto').createHash('sha256').update('ANDY-JWT-SECRET', 'binary').digest('hex')
 
-    static authenticateRequest(req, res, next) {
+    static Run(req, res, next) {
         const authHeader = req.headers['authorization']
         const token = authHeader && authHeader.split(' ')[1]
 

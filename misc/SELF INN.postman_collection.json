@@ -1,0 +1,178 @@
+{
+	"info": {
+		"_postman_id": "91b95204-cdd0-4ee3-9816-523085ea36fa",
+		"name": "SELF INN",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Accounts",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\" : \"ionelpop@gmail.com\",\r\n    \"parola\": \"parola123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{S-ACC}}/login",
+							"host": [
+								"{{S-ACC}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Clients",
+			"item": [
+				{
+					"name": "Register as client",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\" : \"ionelpop@gmail.com\",\r\n    \"parola\": \"parola123\",\r\n    \"prenume\": \"Ionel\",\r\n    \"nume_familie\": \"Popescu\",\r\n    \"cnp\": \"6110624299430\",\r\n    \"serie_buletin\": \"MZ651982\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/clients/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"clients",
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Company",
+			"item": [
+				{
+					"name": "Register as company",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\" : \"alexionescu@gmail.com\",\r\n    \"parola\": \"parola123\",\r\n    \"denumire\": \"SC MAXIMAX SRL\",\r\n    \"cui\": \"Ionescu\",\r\n    \"nr_reg_com\": \"6110624299430\",\r\n    \"sediu_social\": \"Calea Victoriei 120\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/companies/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"companies",
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{AUTHTOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:3000/blabla",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "3000",
+					"path": [
+						"blabla"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "S-HOME",
+			"value": "http://localhost:3000"
+		},
+		{
+			"key": "S-ACC",
+			"value": "{{S-HOME}}/accounts"
+		},
+		{
+			"key": "S-CLI",
+			"value": "{{S-HOME}}/clients"
+		},
+		{
+			"key": "AUTHTOKEN",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6MSwiZW1haWwiOiJhbGV4aW9uZXNjdUBnbWFpbC5jb20iLCJhY2NvdW50X3R5cGUiOiJjb21wYW55IiwiaW5fYXBwX25hbWUiOiJTQyBNQVhJTUFYIFNSTCIsImlhdCI6MTYyNDYyMTU0MiwiZXhwIjoxNjI0NjI4NzQyfQ.Gv9-wlo3up9K0nbn6XUU57X6equTbI1bDj4ni4ABhTY"
+		}
+	]
+}
