@@ -1,24 +1,29 @@
 use selfinn;
 
-drop table if exists bookings cascade;
+drop table if exists bookings;
 
-drop table if exists booking_state cascade;
+drop table if exists booking_state;
 
-drop table if exists card_account_association cascade;
+drop table if exists card_account_association;
 
-drop table if exists cards cascade;
+drop table if exists cards;
 
-drop table if exists clients cascade;
+drop table if exists clients;
 
-drop table if exists company cascade;
+drop table if exists hotel_facilities_association;
 
-drop table if exists accounts cascade;
+drop table if exists facilities;
 
-drop table if exists hotel_facilities_association cascade;
+drop table if exists hotels;
 
-drop table if exists facilities cascade;
+drop table if exists company;
 
-drop table if exists hotels cascade;
+drop table if exists accounts;
+
+
+delete
+from mysql.proc
+WHERE db LIKE 'selfinn';
 
 create or replace table accounts
 (
@@ -72,9 +77,11 @@ create or replace table card_account_association
 
 create or replace table hotels
 (
-    ID        int auto_increment primary key,
-    denumire  varchar(128)  not null,
-    descriere varchar(1024) not null
+    ID         int auto_increment primary key,
+    company_ID int           not null,
+    denumire   varchar(128)  not null,
+    descriere  varchar(1024) not null,
+    constraint ValidOwnerForHotel foreign key (company_ID) references company (ID) on delete cascade
 );
 create or replace table facilities
 (
@@ -116,7 +123,7 @@ create or replace table bookings
     constraint ValidBookingState foreign key (stare_ID) references booking_state (ID) on delete cascade
 );
 
-create or replace
+create
     definer = root@localhost procedure Accounts_Login(IN in_email varchar(256), IN in_password varchar(256))
 begin
     declare v_valid_credentials int default 0;
@@ -137,7 +144,11 @@ begin
 
     if v_is_client_account != 0 then
         set v_acc_type = 'client';
-        select CONCAT(c.prenume, ' ', c.nume_familie) into v_name_in_app from clients c where c.account_ID = v_acc_ID limit 1;
+        select CONCAT(c.prenume, ' ', c.nume_familie)
+        into v_name_in_app
+        from clients c
+        where c.account_ID = v_acc_ID
+        limit 1;
         select v_acc_ID      as ID,
                in_email      as email,
                v_acc_type    as account_type,
@@ -153,7 +164,7 @@ begin
 end;
 
 
-create or replace
+create
     definer = root@localhost procedure Company_Register(IN in_email varchar(256), IN in_password varchar(256)
 , IN in_denumire varchar(256), IN in_cui varchar(16), IN in_nr_reg_com varchar(32), IN in_sediu_social varchar(256))
 begin
@@ -180,7 +191,7 @@ begin
            in_denumire as in_app_name;
 end;
 
-create or replace
+create
     definer = root@localhost procedure Client_Register(IN in_email varchar(256), IN in_password varchar(256)
 , IN in_prenume varchar(256), IN in_nume_familie varchar(16), IN in_cnp varchar(16), IN in_serie_buletin varchar(16))
 begin
@@ -207,3 +218,28 @@ begin
            concat(in_prenume, ' ', in_nume_familie) as in_app_name;
 end;
 
+create or replace
+    definer = root@localhost procedure Hotel_Add(IN in_acc_ID int, IN in_denumire varchar(256),
+                                                 IN in_descriere varchar(256))
+begin
+    declare v_company_ID int default -1;
+
+    declare v_acc_exists int default 0;
+    select count(*) into v_acc_exists from accounts where ID = in_acc_ID;
+
+    if v_acc_exists = -1 then
+        signal sqlstate '45000' set message_text = '$Invalid account id$';
+    end if;
+
+    select account_ID into v_company_ID from company where ID = in_acc_ID;
+
+    if v_company_ID = -1 then
+        signal sqlstate '45000' set message_text = '$Invalid account id$';
+    end if;
+
+    insert into hotels (company_ID, denumire, descriere)
+    VALUES (v_company_ID, in_denumire, in_descriere);
+
+    select last_insert_id() as ID;
+
+end;
